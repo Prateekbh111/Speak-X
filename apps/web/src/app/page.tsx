@@ -27,7 +27,9 @@ export default function Home() {
   function handleSearch() {
     if (questionQuery === "") return;
     setIsFetching(true);
-    const client = new QuestionServiceClient("http://localhost:8080");
+    const client = new QuestionServiceClient(
+      `${process.env.NEXT_PUBLIC_GRPC_URL}:8000`,
+    );
     const req = new SearchQuestionsRequest();
     req.setTitle(questionQuery);
     req.setLimit(rowsPerPage);
