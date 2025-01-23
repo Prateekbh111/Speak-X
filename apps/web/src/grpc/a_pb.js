@@ -1,4 +1,4 @@
-// source: packages/grpc/a.proto
+// source: a.proto
 /**
  * @fileoverview
  * @enhanceable

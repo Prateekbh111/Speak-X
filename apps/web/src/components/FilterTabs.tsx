@@ -6,12 +6,14 @@ const filterOptions = ["All", "MCQ", "ANAGRAM", "CONTENT_ONLY", "READ_ALONG"];
 export default function FilterTabs({
   filterValue,
   setFilterValue,
+  setStartIndex,
 }: {
   filterValue: string;
   setFilterValue: (value: string) => void;
+  setStartIndex: (value: number) => void;
 }) {
   return (
-    <div className="flex flex-wrap justify-center gap-2">
+    <div className="flex  justify-center gap-2">
       {filterOptions.map((option) => (
         <motion.div
           key={option}
@@ -21,7 +23,10 @@ export default function FilterTabs({
           <Button
             variant={filterValue === option ? "default" : "outline"}
             size="sm"
-            onClick={() => setFilterValue(option)}
+            onClick={() => {
+              setFilterValue(option);
+              setStartIndex(0);
+            }}
             className="rounded-full"
           >
             {option}

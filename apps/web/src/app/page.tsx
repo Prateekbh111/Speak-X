@@ -11,6 +11,7 @@ import { Loader2, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FilterTabs from "@/components/FilterTabs";
 import ThemeToggle from "@/components/ThemeToggle";
+import LoadingQuestion from "@/components/LoadingQuestion";
 
 export default function Home() {
   const rowsPerPage = 10;
@@ -28,7 +29,7 @@ export default function Home() {
     if (questionQuery === "") return;
     setIsFetching(true);
     const client = new QuestionServiceClient(
-      `${process.env.NEXT_PUBLIC_GRPC_URL}:8000`,
+      `${process.env.NEXT_PUBLIC_GRPC_URL}:8080`,
     );
     const req = new SearchQuestionsRequest();
     req.setTitle(questionQuery);
@@ -44,10 +45,6 @@ export default function Home() {
     });
   }
 
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setQuestionQuery(e.target.value);
-  }
-
   return (
     <div className="min-h-screen w-full p-4 md:p-10 bg-gradient-to-br from-background to-secondary/20">
       <motion.div
@@ -58,7 +55,7 @@ export default function Home() {
       >
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl md:text-7xl font-bold text-primary drop-shadow-lg font-sans tracking-tighter">
-            Speak<span className="text-secondary text-orange-500">X</span>
+            Speak<span className="text-orange-500">X</span>
           </h1>
           <ThemeToggle />
         </div>
@@ -73,8 +70,8 @@ export default function Home() {
               type="text"
               placeholder="Search questions..."
               value={questionQuery}
-              onChange={handleInputChange}
-              className="rounded-full bg-background/50 backdrop-blur-sm border-primary/20 focus:border-primary"
+              onChange={(e) => setQuestionQuery(e.target.value)}
+              className="rounded-full bg-background/50 backdrop-blur-sm border-primary/20"
             />
             <Button
               type="submit"
@@ -99,21 +96,14 @@ export default function Home() {
                 <FilterTabs
                   filterValue={filterValue}
                   setFilterValue={setFilterValue}
+                  setStartIndex={setStartIndex}
                 />
               </motion.div>
             )}
           </AnimatePresence>
 
           {isFetching ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="flex space-x-2 items-center"
-            >
-              <p className="font-semibold text-2xl">Loading</p>
-              <Loader2 className="animate-spin" />
-            </motion.div>
+            <LoadingQuestion />
           ) : (
             <Question
               questions={questions}
