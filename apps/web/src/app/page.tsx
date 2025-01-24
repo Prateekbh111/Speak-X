@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SearchQuestionsRequest } from "../grpc/a_pb";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { QuestionServiceClient } from "../grpc/AServiceClientPb";
 import Question from "@/components/Question";
 import type { QuestionType } from "@/lib/types";
@@ -21,16 +21,14 @@ export default function Home() {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [filterValue, setFilterValue] = useState<string>("All");
 
-  useEffect(() => {
-    handleSearch();
-  }, [startIndex, filterValue]);
-
   function handleSearch() {
     if (questionQuery === "") return;
     setIsFetching(true);
+
     const client = new QuestionServiceClient(
       `${process.env.NEXT_PUBLIC_GRPC_URL}:8080`,
     );
+
     const req = new SearchQuestionsRequest();
     req.setTitle(questionQuery);
     req.setLimit(rowsPerPage);
@@ -38,13 +36,26 @@ export default function Home() {
     req.setType(filterValue);
 
     client.searchQuestionsByTitle(req, {}, (err, res) => {
-      if (res == null) return;
+      if (err) {
+        console.error("gRPC Error:", err);
+        setIsFetching(false);
+        return;
+      }
+      if (!res) {
+        console.error("Response is null");
+        setIsFetching(false);
+        return;
+      }
+
       console.log(res.toObject());
       setQuestions(res.toObject()!.questionsList as unknown as QuestionType[]);
       setIsFetching(false);
     });
   }
 
+  useEffect(() => {
+    if (questions !== null) handleSearch();
+  }, [startIndex, filterValue]);
   return (
     <div className="min-h-screen w-full p-4 md:p-10 bg-gradient-to-br from-background to-secondary/20">
       <motion.div
@@ -75,7 +86,10 @@ export default function Home() {
             />
             <Button
               type="submit"
-              onClick={handleSearch}
+              onClick={() => {
+                handleSearch();
+                setStartIndex(0);
+              }}
               className="rounded-full"
               variant="default"
             >
@@ -145,6 +159,7 @@ export default function Home() {
                 onClick={() => {
                   setStartIndex(startIndex + rowsPerPage);
                 }}
+                disabled={questions.length < rowsPerPage}
               >
                 Next
               </Button>
