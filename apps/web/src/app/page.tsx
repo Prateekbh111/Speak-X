@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SearchQuestionsRequest } from "../grpc/a_pb";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { QuestionServiceClient } from "../grpc/AServiceClientPb";
 import Question from "@/components/Question";
 import type { QuestionType } from "@/lib/types";
@@ -56,6 +56,7 @@ export default function Home() {
   useEffect(() => {
     if (questions !== null) handleSearch();
   }, [startIndex, filterValue]);
+
   return (
     <div className="min-h-screen w-full p-4 md:p-10 bg-gradient-to-br from-background to-secondary/20">
       <motion.div
