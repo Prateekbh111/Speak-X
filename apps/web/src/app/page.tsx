@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { QuestionServiceClient } from "../grpc/AServiceClientPb";
 import Question from "@/components/Question";
 import type { QuestionType } from "@/lib/types";
-import { Loader2, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FilterTabs from "@/components/FilterTabs";
 import ThemeToggle from "@/components/ThemeToggle";
